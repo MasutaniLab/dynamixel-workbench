@@ -112,6 +112,7 @@ class DynamixelController
   double getReadPeriod(){return read_period_;}
   double getWritePeriod(){return write_period_;}
   double getPublishPeriod(){return pub_period_;}
+  double getTimePeriod(){return pub_period_;}
 
   void initPublisher(void);
   void initSubscriber(void);
@@ -121,6 +122,7 @@ class DynamixelController
   void readCallback(const ros::TimerEvent&);
   void writeCallback(const ros::TimerEvent&);
   void publishCallback(const ros::TimerEvent&);
+  void timerCallback(const ros::TimerEvent& e);
 
   void commandVelocityCallback(const geometry_msgs::Twist::ConstPtr &msg);
   void trajectoryMsgCallback(const trajectory_msgs::JointTrajectory::ConstPtr &msg);
