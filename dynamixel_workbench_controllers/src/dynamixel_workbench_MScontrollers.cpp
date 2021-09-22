@@ -1,17 +1,17 @@
 /*******************************************************************************
 * Copyright 2018 ROBOTIS CO., LTD.
 *
-* Licensed under the Apache License, Version 2.0 (the "License");
+* Licensed lower the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
 *
 *     http://www.apache.org/licenses/LICENSE-2.0
 *
 * Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
+* distributed lower the License is distributed on an "AS IS" BASIS,
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
-* limitations under the License.
+* limitations lower the License.
 *******************************************************************************/
 
 /* Authors: Taehun Lim (Darby) */
@@ -32,9 +32,10 @@
 
 using namespace std;
 
-int mode;  //0 unilateral //1 bilateral //2 Waiting for input
-int upper; //0 free //1 lock //2 Waiting for input
-int under; //0 free //1 lock //2 Waiting for input
+int mode;  //0 Waiting for input //1 unilateral // 2 bilateral //3 init postion 
+int upper; //0 Waiting for input //1 free //2 lock
+int lower; //0 Waiting for input //1 free //2 lock
+//ros::Rate rate2(1);
 
 DynamixelController::DynamixelController()
   : node_handle_(""),
@@ -720,30 +721,63 @@ void DynamixelController::timerCallback(const ros::TimerEvent& e) {
 #endif
   bool result = false;
   const char* log = NULL;
+  if(mode == 3){
+    ROS_INFO("Return to initial position!!");
+    mode = 0;
+    result = dxl_wb_->torqueOn(1);
+    result = dxl_wb_->torqueOn(2);
+    result = dxl_wb_->torqueOn(3);
+    result = dxl_wb_->torqueOn(4);
+    result = dxl_wb_->torqueOn(8);
+    result = dxl_wb_->torqueOn(9);
+    result = dxl_wb_->torqueOn(10);
+    result = dxl_wb_->torqueOn(11);
 
-  if (under == 1) {
-    ROS_INFO("under arm lock");
-    under = 2;
+    result = dxl_wb_->goalPosition(1,2048);
+    //rate2.sleep();
+    result = dxl_wb_->goalPosition(2,2048);
+    //rate2.sleep();
+    result = dxl_wb_->goalPosition(3,2816);
+    //rate2.sleep();
+    result = dxl_wb_->goalPosition(4,256);
+    //rate2.sleep();
+    result = dxl_wb_->goalPosition(8,2048);
+    //rate2.sleep();
+    result = dxl_wb_->goalPosition(9,2048);
+    //rate2.sleep();
+    result = dxl_wb_->goalPosition(10,2048);
+    //rate2.sleep();
+    result = dxl_wb_->goalPosition(11,2048);
+  }
+
+  if (lower == 1) {
+    ROS_INFO("lower arm lock");
+    lower = 0;
+    result = dxl_wb_->torqueOn(1);
     result = dxl_wb_->torqueOn(2);
     result = dxl_wb_->torqueOn(3);
     result = dxl_wb_->torqueOn(4);
   }
-  else if (under == 0) {
-    ROS_INFO("under arm unlock");
-    under = 2;
+  else if (lower == 2) {
+    ROS_INFO("lower arm unlock");
+    lower = 0;
+    result = dxl_wb_->torqueOff(1);
     result = dxl_wb_->torqueOff(2);
     result = dxl_wb_->torqueOff(3);
     result = dxl_wb_->torqueOff(4);
-  }  if (upper == 1) {
+  }  
+  if (upper == 1) {
     ROS_INFO("upper arm lock");
-    upper = 2;
+    upper = 0;
+    result = dxl_wb_->torqueOn(8);
     result = dxl_wb_->torqueOn(9);
     result = dxl_wb_->torqueOn(10);
     result = dxl_wb_->torqueOn(11);
   }
-  else if (upper == 0) {
+  else if (upper == 2) {
     ROS_INFO("upper arm unlock");
-    upper = 2;
+    upper = 0;
+    result = dxl_wb_->torqueOff(8);
     result = dxl_wb_->torqueOff(9);
     result = dxl_wb_->torqueOff(10);
     result = dxl_wb_->torqueOff(11);
@@ -829,7 +863,7 @@ int main(int argc, char** argv) {
   int key; // key
   //int mode;  //0 unilateral //1 bilateral //2 Waiting for input
   //int upper; //0 free //1 lock //2 Waiting for input
-  //int under; //0 free //1 lock //2 Waiting for input
+  //int lower; //0 free //1 lock //2 Waiting for input
   while (1) {
     key = getchar();
 
@@ -837,27 +871,31 @@ int main(int argc, char** argv) {
       //ROS_INFO("do");
       if (key == 'u') {
         //ROS_INFO("change unilateral control");
-        mode = 1;
+        mode = 2;
       }
       if (key == 'b') {
         //ROS_INFO("change bilateral control");
-        mode = 0;
+        mode = 1;
+      }
+      if (key == 'r') {
+        //ROS_INFO("Return to initial position!!");
+        mode = 3;
       }
       if (key == '1') {
-        //ROS_INFO("lock under arm");
-        under = 1;
+        //ROS_INFO("lock lower arm");
+        lower = 2;
       }
       if (key == '2') {
-        //ROS_INFO("unlock under arm");
-        under = 0;
+        //ROS_INFO("unlock lower arm");
+        lower = 1;
       }
       if (key == '3') {
         //ROS_INFO("lock upper arm");
-        upper = 1;
+        upper = 2;
       }
       if (key == '4') {
         //ROS_INFO("unlock upper arm");
-        upper = 0;
+        upper = 1;
       }
     }
     else {
