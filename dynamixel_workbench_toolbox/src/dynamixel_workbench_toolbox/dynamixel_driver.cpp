@@ -705,7 +705,7 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, uint16_t address, uint16_t l
 
   return false;
 }
-
+/*
 bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, int32_t data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
@@ -768,6 +768,7 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, int32
 
   return false;
 }
+*/
 
 bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length, uint32_t *data, const char **log)
 {

@@ -35,7 +35,6 @@ using namespace std;
 int mode;  //0 Waiting for input //1 unilateral // 2 bilateral //3 init postion 
 int upper; //0 Waiting for input //1 free //2 lock
 int lower; //0 Waiting for input //1 free //2 lock
-//ros::Rate rate2(1);
 
 DynamixelController::DynamixelController()
   : node_handle_(""),
@@ -719,6 +718,7 @@ void DynamixelController::timerCallback(const ros::TimerEvent& e) {
 #ifdef DEBUG
   static double priv_read_secs = ros::Time::now().toSec();
 #endif
+ros::Rate rate2(1);
   bool result = false;
   const char* log = NULL;
   if(mode == 3){
@@ -734,19 +734,17 @@ void DynamixelController::timerCallback(const ros::TimerEvent& e) {
     result = dxl_wb_->torqueOn(11);
 
     result = dxl_wb_->goalPosition(1,2048);
-    //rate2.sleep();
+    rate2.sleep();
     result = dxl_wb_->goalPosition(2,2048);
-    //rate2.sleep();
-    result = dxl_wb_->goalPosition(3,2816);
-    //rate2.sleep();
-    result = dxl_wb_->goalPosition(4,256);
-    //rate2.sleep();
+    rate2.sleep();
+    result = dxl_wb_->goalPosition(3,2970);
+    rate2.sleep();
     result = dxl_wb_->goalPosition(8,2048);
-    //rate2.sleep();
+    rate2.sleep();
     result = dxl_wb_->goalPosition(9,2048);
-    //rate2.sleep();
+    rate2.sleep();
     result = dxl_wb_->goalPosition(10,2048);
-    //rate2.sleep();
+    rate2.sleep();
     result = dxl_wb_->goalPosition(11,2048);
   }
 
